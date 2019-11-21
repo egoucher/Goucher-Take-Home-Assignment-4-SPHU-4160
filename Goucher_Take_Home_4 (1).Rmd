@@ -1,0 +1,125 @@
+---
+title: "Goucher Take Home R"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+```{r setup} 
+#Preamble
+#------------------------------------------------------------------------#
+# Take Home Assignment 4                                                 #
+# Erin Goucher November 21st 2019  egoucher@tulane.edu                   #
+#                                                                        #
+# This is the script  for Take-home assignment 4 for SPHU 4160.          #
+# It was developed in R 3.5.1.                                           #
+#------------------------------------------------------------------------#
+
+library(tidyverse)
+library(devtools)
+library(ggplot2)
+library(Hmisc)
+library(knitr)
+
+```
+```{r print and get runtime}
+date()
+```
+
+```{r Get Working Directory}
+getwd()
+setwd("/Users/egoucher/Documents/sphu4160/fall_2019/class_library_R")
+``` 
+
+```{r Import Data}
+mydata <-read.csv("C://Users/egoucher/Documents/sphu4160/fall_2019/class_library_R/ghana_bednet.csv")
+```
+
+
+
+```{r Question 1+2}
+#* Question 1 and 2*
+View(mydata)
+head(mydata)
+describe(mydata)
+#1. 26342 observations
+#2. 8 variables
+```
+
+```{r Question 3}
+#*Question 3*
+mydata$sex[mydata$sex=="F"] <- 1
+mydata$sex[mydata$sex=="."] <- NA
+summary(mydata$sex)
+# 3. Proportion of males = 13305/26342= .5051
+```
+```{r Question 4}
+#*Question 4*
+mydata$follyr <- as.numeric(as.character(mydata$follyr))
+mydata$follyr [mydata$follyr=="."] <- 0
+describe(mydata$follyr)
+fidata <- subset(mydata, bednet == "1" & sex == "1", select =c(bednet, outcome, follyr))
+class(mydata$follyr)
+sum(fidata$follyr, na.rm=TRUE)
+#4.	The sum of the follow up years in female children in intervention areas was 8395.184
+```
+
+```{r Question 5}
+#*Question 5*
+cluster1data <- subset(mydata, cluster == "52" & outcome == "1", select =c(cluster, outcome, bednet))
+print(cluster1data)
+
+cluster0data <- subset(mydata, cluster== "52" & outcome == "0", select =c(cluster, outcome, bednet))
+print(cluster0data)
+
+#5.	Proportion of children died during follow up= 9/370= .0093
+```
+
+```{r Question 6}
+#*Question 6*
+mean(mydata$agegp)
+sd(mydata$agegp)
+#6.	The mean subject age is 1.5941 and the standard deviation is 1.5118
+```
+
+```{r Question 7 Control}
+#*Question 7*
+follyrcontroldata <-subset(mydata, bednet=="0", select = c(bednet, follyr))
+print(follyrcontroldata)
+sum(follyrcontroldata$follyr, na.rm=TRUE)
+
+controldata <- subset(mydata, bednet == "0" & outcome == "1", select =c(bednet, outcome, follyr))
+print(controldata)
+#7.	The total sum of person years for all children in the control group was 16492.83, 461 children in the control group died during follow up. The mortality rate in the control group was 461/16492.83= 2.7952 per 100 person years.  
+```
+
+
+```{r Question 7 Intervention}
+#*Question 7 cont.*
+follyrinterventiondata<-subset(mydata, bednet=="1", select=c(bednet, follyr))
+print(follyrinterventiondata)
+sum(follyrinterventiondata$follyr, na.rm=TRUE)
+
+interventiondata <- subset(mydata, bednet == "1" & outcome == "1", select =c(bednet, outcome, follyr))
+print(interventiondata)
+#The total sum of person years for all children in the intervention group was 16841.04, 396 children in the intervention group died during follow up. The mortality rate in the intervention group was 396/16841.04= 2.3514 per 100 per 100 person years.
+```
+
+
+```{r Question 8}
+#*Question *
+ggplot(data = mydata, aes(x=cluster, y=outcome)) + geom_bar(stat="identity") + ggtitle("Number of Participant Deaths By Cluster")
+```
+
+```{r Question 9}
+#*Question 9*
+results <- glm(outcome~bednet, family=binomial(link= "logit"), data = mydata)
+summary(results)
+```
+
+```{r Question 10}
+#*Question 10*
+t.test(mydata$outcome~mydata$bednet)
+#10.	Yes, the means of the two outcomes are different based on whether they were in the control or intervention group. The participants in the intervention group had a decreased probability of experiencing the outcome of death. The p-value was .009991 showing this result to be significant.
+```
