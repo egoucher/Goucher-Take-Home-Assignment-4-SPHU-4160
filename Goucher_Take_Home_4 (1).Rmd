@@ -53,11 +53,14 @@ mydata$sex[mydata$sex=="F"] <- 1
 mydata$sex[mydata$sex=="."] <- NA
 summary(mydata$sex)
 # 3. Proportion of males = 13305/26342= .5051
+#Your answer is correct. If you did the above calculation by hand or using a calculator, do note that you can perform this operation either in the console or run it from your script as shown below (this helps avoid introducing human error), alternatively you can also acquire proportions through the describe command
+13305/26342
 ```
 ```{r Question 4}
 #*Question 4*
 mydata$follyr <- as.numeric(as.character(mydata$follyr))
 mydata$follyr [mydata$follyr=="."] <- 0
+#note missing values in R are denoted as NA
 describe(mydata$follyr)
 fidata <- subset(mydata, bednet == "1" & sex == "1", select =c(bednet, outcome, follyr))
 class(mydata$follyr)
@@ -73,6 +76,10 @@ print(cluster1data)
 cluster0data <- subset(mydata, cluster== "52" & outcome == "0", select =c(cluster, outcome, bednet))
 print(cluster0data)
 
+#good job Erin in subsetting your data correctly and your numerator and denominator are correct; however your written in calculation is incorrect 
+#when I re-ran your calculation below, it yielded a different (correct) answer (0.024)
+9/370
+
 #5.	Proportion of children died during follow up= 9/370= .0093
 ```
 
@@ -81,6 +88,8 @@ print(cluster0data)
 mean(mydata$agegp)
 sd(mydata$agegp)
 #6.	The mean subject age is 1.5941 and the standard deviation is 1.5118
+
+#you selected an incorrect variable to calculate age in months, you used agegp (which denotes age group and is a categorical variable) instead of agenm (which denotes age in months and is a continuous variable, appropriate for running a mean on)
 ```
 
 ```{r Question 7 Control}
@@ -91,7 +100,7 @@ sum(follyrcontroldata$follyr, na.rm=TRUE)
 
 controldata <- subset(mydata, bednet == "0" & outcome == "1", select =c(bednet, outcome, follyr))
 print(controldata)
-#7.	The total sum of person years for all children in the control group was 16492.83, 461 children in the control group died during follow up. The mortality rate in the control group was 461/16492.83= 2.7952 per 100 person years.  
+#7.	The total sum of person years for all children in the control group was 16492.83, 461 children in the control group died during follow up. The mortality rate in the control group was 461/16492.83= 2.7952 per 100 person-years.  
 ```
 
 
@@ -103,13 +112,16 @@ sum(follyrinterventiondata$follyr, na.rm=TRUE)
 
 interventiondata <- subset(mydata, bednet == "1" & outcome == "1", select =c(bednet, outcome, follyr))
 print(interventiondata)
-#The total sum of person years for all children in the intervention group was 16841.04, 396 children in the intervention group died during follow up. The mortality rate in the intervention group was 396/16841.04= 2.3514 per 100 per 100 person years.
+#The total sum of person years for all children in the intervention group was 16841.04, 396 children in the intervention group died during follow up. The mortality rate in the intervention group was 396/16841.04= 2.3514 per 100 person- years.
 ```
 
 
 ```{r Question 8}
 #*Question *
 ggplot(data = mydata, aes(x=cluster, y=outcome)) + geom_bar(stat="identity") + ggtitle("Number of Participant Deaths By Cluster")
+
+#good use of ggplot for creating a bar graph, nice title and labeling the x-axis
+#your y-xis shows counts of deaths but the question asks for proportion of deaths; also, two different colors can be added to distinguish between deaths that occurred in clusters with intervention (bednet) and those without the intervention
 ```
 
 ```{r Question 9}
@@ -122,4 +134,10 @@ summary(results)
 #*Question 10*
 t.test(mydata$outcome~mydata$bednet)
 #10.	Yes, the means of the two outcomes are different based on whether they were in the control or intervention group. The participants in the intervention group had a decreased probability of experiencing the outcome of death. The p-value was .009991 showing this result to be significant.
+
+#running a t-test would not be appropriate for answering this question; question 10 relates to the output of the logistic regression from question 9
+#we are interested in probability of death across intervention and non-intervention areas, not comparing the means of the outcome variable (which itself is dichotomous, 0 or 1, and this kind of data does not result in anything interpretable)
+#the coefficient (-0.17937) shows that there is a lower probability of death among children in intervention areas than in non-intervention areas, and this finding is statistically significant (p=0.01)
+
 ```
+#good preamble, great subsetting of data and using the select function; next step would be getting fluent in using piping operators (as they help in reducing the amount of intermediate steps)
